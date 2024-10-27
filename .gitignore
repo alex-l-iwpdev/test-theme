@@ -1,0 +1,15 @@
+/vendor/
+/.DS_Store
+/.distignore
+/.gitignore
+/.phpcs.cache
+/Thumbs.db
+/WordPress.xml
+/auth.json
+/composer.lock
+/phpcs.xml
+
+# Directories
+/.git
+/.github
+/.idea
