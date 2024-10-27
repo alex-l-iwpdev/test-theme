@@ -30,7 +30,7 @@ class WPBakerySwiperJsSlider {
 			vc_lean_map( 'wpb_swiper_slider', [ $this, 'map' ] );
 		}
 
-		$this->icon_url = get_template_directory_uri() . '/img/icons/';
+		$this->icon_url = get_stylesheet_directory_uri() . '/assets/img/icons/';
 	}
 
 	/**
@@ -45,33 +45,39 @@ class WPBakerySwiperJsSlider {
 			'base'                    => 'wpb_swiper_slider',
 			'category'                => __( 'IWPDEV', 'twentytwentytwo' ),
 			'show_settings_on_create' => false,
-			'icon'                    => $this->icon_url . 'photo-film-solid.svg',
+			'icon'                    => $this->icon_url . 'images-regular.svg',
 			'params'                  => [
 				[
 					'type'       => 'param_group',
 					'value'      => '',
-					'heading'    => __( 'Логотипи', 'alevel' ),
-					'param_name' => 'logos',
+					'heading'    => __( 'Slides', 'twentytwentytwo' ),
+					'param_name' => 'slides',
 					'params'     => [
 						[
 							'type'       => 'attach_image',
 							'value'      => '',
-							'heading'    => __( 'Логотип', 'alevel' ),
+							'heading'    => __( 'Slide', 'twentytwentytwo' ),
 							'param_name' => 'slide_image',
 						],
 						[
-							'type'       => 'textfield',
+							'type'       => 'textarea',
 							'value'      => '',
-							'heading'    => __( 'Посилання на компанію', 'alevel' ),
-							'param_name' => 'company_link',
+							'heading'    => __( 'Title', 'twentytwentytwo' ),
+							'param_name' => 'content_text_title',
+						],
+						[
+							'type'       => 'textarea',
+							'value'      => '',
+							'heading'    => __( 'Sub Title', 'twentytwentytwo' ),
+							'param_name' => 'content_text_sub_title',
 						],
 					],
 				],
 				[
 					'type'       => 'css_editor',
-					'heading'    => esc_html__( 'Кастомний css', 'alevel' ),
+					'heading'    => esc_html__( 'Custom css', 'twentytwentytwo' ),
 					'param_name' => 'css',
-					'group'      => esc_html__( 'Варіанти дизайну', 'alevel' ),
+					'group'      => esc_html__( 'Design options', 'twentytwentytwo' ),
 				],
 			],
 		];
@@ -87,7 +93,35 @@ class WPBakerySwiperJsSlider {
 	 */
 	public function output( $atts, string $content = null ): string {
 		ob_start();
-		include Main::ALV_DIR_PATH . '/WpBakery/template/LogoSlider/template.php';
+		$css_class = vc_shortcode_custom_css_class( $atts['css'] ?? '', ' ' );
+		$slides    = vc_param_group_parse_atts( $atts['slides'] );
+
+		if ( ! empty( $slides ) ) {
+			?>
+			<!-- Slider main container -->
+			<div class="swiper <?php echo esc_attr( $css_class ?? '' ); ?>">
+				<!-- Additional required wrapper -->
+				<div class="swiper-wrapper">
+					<!-- Slides -->
+					<?php
+					foreach ( $slides as $slide ) {
+						$image = wp_get_attachment_image_url( $slide['slide_image'], 'full' );
+						?>
+						<div class="swiper-slide">
+							<img
+									src="<?php echo esc_url( $image ?? '' ); ?>"
+									alt="<?php echo esc_attr( $slide['slide_image'] ?? '' ); ?>">
+							<h2><?php echo wp_kses_post( $slide['content_text_title'] ); ?></h2>
+							<h3><?php echo wp_kses_post( $slide['content_text_sub_title'] ); ?></h3>
+						</div>
+					<?php } ?>
+				</div>
+				<div class="swiper-button-next"></div>
+				<div class="swiper-button-prev"></div>
+				<div class="swiper-pagination"></div>
+			</div>
+			<?php
+		}
 
 		return ob_get_clean();
 	}
