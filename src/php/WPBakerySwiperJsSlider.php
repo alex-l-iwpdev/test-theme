@@ -111,8 +111,10 @@ class WPBakerySwiperJsSlider {
 							<img
 									src="<?php echo esc_url( $image ?? '' ); ?>"
 									alt="<?php echo esc_attr( $slide['slide_image'] ?? '' ); ?>">
-							<h2><?php echo wp_kses_post( $slide['content_text_title'] ); ?></h2>
-							<h3><?php echo wp_kses_post( $slide['content_text_sub_title'] ); ?></h3>
+				            <div class="swiper-text">
+                                <h2><?php echo wp_kses_post( $slide['content_text_title'] ); ?></h2>
+                                <h3><?php echo wp_kses_post( $slide['content_text_sub_title'] ); ?></h3>
+				            </div>
 						</div>
 					<?php } ?>
 				</div>
