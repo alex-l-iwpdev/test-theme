@@ -7,7 +7,8 @@
 
 namespace TestTheme;
 
-use Elementor\Plugin;
+use WPCF7_ContactForm;
+use WPCF7_Submission;
 
 /**
  * Main class file.
@@ -26,33 +27,44 @@ class Main {
 	 * @return void
 	 */
 	public function init(): void {
-		new WPBakerySwiperJsSlider();
-
-		add_action( 'wp_enqueue_scripts', [ $this, 'add_style_and_scripts' ] );
-
-		add_action( 'elementor/widgets/widgets_registered', [ $this, 'register_elementor_widgets' ] );
+		add_action( 'wpcf7_before_send_mail', [ $this, 'mail_send_to_tg' ] );
 	}
 
 	/**
-	 * Add style and script.
+	 * Mail send to TG.
+	 *
+	 * @param WPCF7_ContactForm $wpcf7 Contact form 7 form instance.
 	 *
 	 * @return void
 	 */
-	public function add_style_and_scripts(): void {
-		wp_enqueue_style( 'test-theme-swiper', '//cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css', '', '11.0.0' );
-		wp_enqueue_style( 'test-theme-main', get_stylesheet_directory_uri() . '/assets/css/main.css', [], '1.0.0' );
+	public function mail_send_to_tg( WPCF7_ContactForm $wpcf7 ) {
+		// get the form instance.
+		$submission = WPCF7_Submission::get_instance();
 
-		wp_enqueue_script( 'test-theme-swiper', '//cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js', [ 'jquery' ], '11.0.0', true );
-		wp_enqueue_script( 'test-theme-main', get_stylesheet_directory_uri() . '/assets/js/main.js', [ 'jquery' ], '1.0.0', true );
+		// get data from the form.
+		$posted_data = $submission->get_posted_data();
 
-	}
+		// Class that sends data from the form to the telegram bot.
+		$message_send = TelegramSender::send_to_tg_chanel( $posted_data );
 
-	/**
-	 * Register elementor widgets.
-	 *
-	 * @return void
-	 */
-	public function register_elementor_widgets(): void {
-		Plugin::instance()->widgets_manager->register_widget_type( new ElementorSwiperJsSlider() );
+		if ( isset( $message_send['error'] ) ) {
+			$wpcf7->set_properties(
+				[
+					'messages' => [
+						'validation_error' => 'An error occurred while submitting the form. Please check the entered data.',
+					],
+				]
+			);
+
+			// Set the error flag.
+			add_filter(
+				'wpcf7_validate',
+				function ( $result ) {
+					$result->invalidate( null, 'An error occurred while submitting the form.' );
+
+					return $result;
+				}
+			);
+		}
 	}
 }
