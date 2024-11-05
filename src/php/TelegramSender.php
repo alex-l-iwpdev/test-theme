@@ -17,12 +17,12 @@ class TelegramSender {
 	/**
 	 * Telegram token
 	 */
-	const TELEGRAM_TOKEN = '7687735227:AAF0HeUa-x6a3jE0nKgUIW7678jhyyosz1o';
+	const TELEGRAM_TOKEN = 'YOUR TELEGRAM TOKEN';
 
 	/**
 	 * Telegram chat id.
 	 */
-	const TELEGRAM_CHAT_ID = '259089982';
+	const TELEGRAM_CHAT_ID = 'YOUR CHAT ID';
 
 	/**
 	 * Telegram API base url.
