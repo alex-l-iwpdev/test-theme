@@ -33,6 +33,7 @@
     "php-coveralls/php-coveralls": "^2.4"
   },
   "require": {
+    "firebase/php-jwt": "^6.10"
   },
   "scripts": {
     "phpcs": "vendor/bin/phpcs --colors --standard=phpcs.xml"
